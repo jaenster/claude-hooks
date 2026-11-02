@@ -79,6 +79,7 @@ bash_hook $G 'push --force-with-lease feat'  allow 'git push --force-with-lease 
 bash_hook $N 'commit: clean subject'         allow 'git commit -m "fix: retry uploader on 503"'
 bash_hook $P 'pnpm install'                  allow 'pnpm install'
 bash_hook $P 'npx tsx script.ts'             allow 'npx tsx script.ts'
+bash_hook $P 'npm in commit message'        allow "git commit -m 'fix: redirect npm to pnpm'"
 write_hook $M 'minimal separator'            allow /tmp/x.md '| a | b |
 |-|-|'
 write_hook $N 'phase as a variable'          allow /tmp/a.ts 'const phase = 2; if (a.phase === 1) {}'

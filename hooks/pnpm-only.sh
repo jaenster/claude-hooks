@@ -10,6 +10,10 @@ cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // ""')
 # Ignore heredoc bodies and anything after a comment marker.
 scan=$(printf '%s\n' "$cmd" | awk '{ if (index($0,"<<")>0) { sub(/<<.*/,""); print; exit } print }')
 
+# Strip git commit -m message bodies — mentioning npm in a commit message is
+# not the same as running npm.
+scan=$(printf '%s' "$scan" | sed -E "s/(-m|--message)[[:space:]]*['\"][^'\"]*['\"]//g")
+
 if printf '%s' "$scan" | grep -Eq '(^|[;&|(]|[[:space:]])npm([[:space:]]|$)'; then
   sub=$(printf '%s' "$scan" | grep -oE '(^|[;&|(]|[[:space:]])npm[[:space:]]+[a-z-]+' | head -1 | awk '{print $2}')
   # Bare "npm install" installs the whole tree; with a package it adds one.
