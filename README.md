@@ -13,9 +13,21 @@ These hooks run as `PreToolUse` and `PostToolUse` interceptors — Claude Code c
 | **git-identity** | `Bash` | Prevents Claude from overriding your git identity with its session email (the Anthropic account email, not your git email) |
 | **md-style** | `Write`, `Edit` | Enforces minimal markdown table separators (`\|-\|-\|`) and bans box-drawing characters |
 | **pnpm-only** | `Bash` | Blocks `npm` commands and suggests the `pnpm` equivalent (leaves `npx` alone) |
+| **commit-msg-lint** | `Bash` | Enforces conventional commits (`feat:`, `fix(scope):`, etc.) and 72-char subject limit |
+| **no-gpgsign-bypass** | `Bash` | Blocks `commit.gpgsign=false` and `--no-gpg-sign` overrides |
+| **no-sudo** | `Bash` | Blocks `sudo` — Claude should explain the problem, not escalate privileges |
+| **no-curl-pipe-sh** | `Bash` | Blocks `curl \| bash` patterns — download first, inspect, then run |
+| **no-secrets-read** | `Read`, `Write`, `Edit`, `Bash` | Blocks reading/writing `.env`, private keys, credential files, token files |
 | **require-tests** | Stop hook | Blocks Claude from finishing its turn if source files were changed but nothing was built/tested |
 | **track-verify** | `PostToolUse` | Records which files changed and when tests/builds ran; feeds the require-tests stop hook |
-| **regress** | — | Regression test suite for all the above hooks |
+| **regress** | — | Regression test suite for all hooks |
+
+The repo also includes **global git hooks** (in `git-hooks/`) that run at the git level, independent of Claude:
+
+| Hook | What it does |
+|-|-|
+| **commit-msg** | Rejects commits with Claude attribution in the message text |
+| **pre-commit** | Rejects commits authored by assistant email addresses |
 
 ## Quick install (macOS)
 

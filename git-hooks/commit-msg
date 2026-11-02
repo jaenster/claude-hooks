@@ -1,0 +1,9 @@
+#!/bin/sh
+# Global guard (core.hooksPath): reject AI co-author / attribution trailers.
+if grep -qiE 'co-authored-by:.*claude|generated with .*claude|claude code|@anthropic\.com' "$1"; then
+    echo "commit-msg: REFUSING — AI co-author/attribution trailer in the message. Remove it." >&2
+    exit 1
+fi
+rh="$(git rev-parse --git-common-dir 2>/dev/null)/hooks/commit-msg"
+[ -x "$rh" ] && exec "$rh" "$@"
+exit 0

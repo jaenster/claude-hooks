@@ -1,0 +1,16 @@
+#!/bin/sh
+# Global guard (core.hooksPath): never commit under an AI/assistant identity.
+deny='claude@|@stoots\.info|@anthropic\.com'
+au=$(git var GIT_AUTHOR_IDENT 2>/dev/null)
+co=$(git var GIT_COMMITTER_IDENT 2>/dev/null)
+if printf '%s\n%s\n' "$au" "$co" | grep -qiE "$deny"; then
+    echo "pre-commit: REFUSING — assistant identity in author/committer:" >&2
+    echo "  author:    $au" >&2
+    echo "  committer: $co" >&2
+    echo "  fix: git config user.email you@example.com   (never 'git -c user.email=...')" >&2
+    exit 1
+fi
+# chain to the repo's own pre-commit, if any
+rh="$(git rev-parse --git-common-dir 2>/dev/null)/hooks/pre-commit"
+[ -x "$rh" ] && exec "$rh" "$@"
+exit 0
