@@ -112,6 +112,11 @@ bash_hook $N 'commit: clean subject'         allow 'git commit -m "fix: retry up
 bash_hook $P 'pnpm install'                  allow 'pnpm install'
 bash_hook $P 'npx tsx script.ts'             allow 'npx tsx script.ts'
 bash_hook $P 'npm in commit message'        allow "git commit -m 'fix: redirect npm to pnpm'"
+bash_hook $P 'grep for npm'                 allow 'grep -r "npm" package.json'
+bash_hook $P 'cat npm debug log'            allow 'cat npm-debug.log'
+bash_hook $P 'rm package-lock'              allow 'rm package-lock.json'
+bash_hook $P 'find npm files'               allow 'find . -name "*.npm*"'
+bash_hook $P 'echo mentioning npm'          allow 'echo "migrate from npm to pnpm"'
 write_hook $M 'minimal separator'            allow /tmp/x.md '| a | b |
 |-|-|'
 write_hook $N 'phase as a variable'          allow /tmp/a.ts 'const phase = 2; if (a.phase === 1) {}'

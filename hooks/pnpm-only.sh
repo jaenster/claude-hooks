@@ -14,7 +14,10 @@ scan=$(printf '%s\n' "$cmd" | awk '{ if (index($0,"<<")>0) { sub(/<<.*/,""); pri
 # not the same as running npm.
 scan=$(printf '%s' "$scan" | sed -E "s/(-m|--message)[[:space:]]*['\"][^'\"]*['\"]//g")
 
-if printf '%s' "$scan" | grep -Eq '(^|[;&|(]|[[:space:]])npm([[:space:]]|$)'; then
+# Only match npm in command position: start of a statement (after ^, ;, &&, ||,
+# |, or (). Mentioning npm as an argument (grep npm, cat npm-debug.log, rm
+# package-lock.json) is fine — we only block *running* npm.
+if printf '%s' "$scan" | grep -Eq '(^|;[[:space:]]*|&&[[:space:]]*|\|\|[[:space:]]*|\|[[:space:]]*|\([[:space:]]*)npm([[:space:]]|$)'; then
   sub=$(printf '%s' "$scan" | grep -oE '(^|[;&|(]|[[:space:]])npm[[:space:]]+[a-z-]+' | head -1 | awk '{print $2}')
   # Bare "npm install" installs the whole tree; with a package it adds one.
   rest=$(printf '%s' "$scan" | grep -oE '(^|[;&|(]|[[:space:]])npm[[:space:]]+[a-z-]+([[:space:]]+-[^[:space:]]+)*[[:space:]]+[^-[:space:]][^[:space:]]*' | head -1)
