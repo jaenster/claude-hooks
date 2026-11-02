@@ -18,7 +18,9 @@ These hooks run as `PreToolUse` and `PostToolUse` interceptors — Claude Code c
 | **no-sudo** | `Bash` | Blocks `sudo` — Claude should explain the problem, not escalate privileges |
 | **no-curl-pipe-sh** | `Bash` | Blocks `curl \| bash` patterns — download first, inspect, then run |
 | **no-secrets-read** | `Read`, `Write`, `Edit`, `Bash` | Blocks reading/writing `.env`, private keys, credential files, token files |
-| **regress** | — | Regression test suite for all hooks |
+| **ascii-only** | `Write`, `Edit`, `Bash` | Blocks em-dashes, curly quotes, Unicode arrows, fancy whitespace, and other non-ASCII in source code and commit messages |
+| **no-broad-kill** | `Bash` | Blocks `pkill`/`killall` without `-f` and `kill $(pgrep ...)` patterns -- find the specific PID first |
+| **regress** | — | Regression test suite for all hooks (83 tests) |
 
 The repo also includes **global git hooks** (in `git-hooks/`) that run at the git level, independent of Claude:
 

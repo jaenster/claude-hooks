@@ -103,6 +103,27 @@
         ]
       }
     ],
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/ascii-only.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/no-broad-kill.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "PostToolUse": [],
     "Stop": []
   }

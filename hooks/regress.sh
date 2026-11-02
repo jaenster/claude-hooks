@@ -16,6 +16,7 @@ N=$(resolve no-claude-clutter.sh); P=$(resolve pnpm-only.sh)
 I=$(resolve git-identity.sh); CL=$(resolve commit-msg-lint.sh)
 GP=$(resolve no-gpgsign-bypass.sh); SU=$(resolve no-sudo.sh)
 SR=$(resolve no-secrets-read.sh); CS=$(resolve no-curl-pipe-sh.sh)
+AO=$(resolve ascii-only.sh); BK=$(resolve no-broad-kill.sh)
 PASS=0; FAIL=0
 
 chk() { # $1=label $2=want $3=got
@@ -89,8 +90,28 @@ read_hook $SR 'read private key'             DENY '/home/u/.ssh/id_ed25519'
 read_hook $SR 'read aws credentials'         DENY '/home/u/.aws/credentials'
 read_hook $SR 'read service account json'    DENY '/app/service_account.json'
 write_hook $SR 'write to .env'               DENY /app/.env 'SECRET=abc'
+write_hook $AO 'em-dash in source'           DENY /tmp/a.ts $'// this is important \xe2\x80\x94 very'
+write_hook $AO 'curly quotes in source'      DENY /tmp/a.ts $'const msg = \xe2\x80\x9chello\xe2\x80\x9d'
+write_hook $AO 'ellipsis in source'          DENY /tmp/a.ts $'// loading\xe2\x80\xa6'
+bash_hook $AO 'em-dash in commit msg'        DENY $'git commit -m "fix: handle retries \xe2\x80\x94 properly"'
+write_hook $AO 'right arrow in source'      DENY /tmp/a.ts $'// input \xe2\x86\x92 output'
+write_hook $AO 'non-breaking space'         DENY /tmp/a.ts $'const x\xc2\xa0= 1'
+write_hook $AO 'zero-width space'           DENY /tmp/a.ts $'const\xe2\x80\x8bx = 1'
+write_hook $AO 'Unicode multiply'           DENY /tmp/a.ts $'// 3 \xc3\x97 4 = 12'
+write_hook $AO 'Unicode leq'               DENY /tmp/a.ts $'// x \xe2\x89\xa4 10'
+write_hook $AO 'BOM in source'              DENY /tmp/a.ts $'\xef\xbb\xbfconst x = 1'
+bash_hook $BK 'bare pkill'                   DENY 'pkill node'
+bash_hook $BK 'bare killall'                 DENY 'killall python'
+bash_hook $BK 'pkill short pattern'          DENY 'pkill -9 sh'
+bash_hook $BK 'kill pgrep subshell'          DENY 'kill $(pgrep node)'
 
 echo "MUST STILL ALLOW"
+write_hook $AO 'ASCII in source'             allow /tmp/a.ts '// this is important -- very'
+write_hook $AO 'em-dash in markdown'         allow /tmp/a.md $'hello \xe2\x80\x94 world'
+bash_hook $AO 'ASCII commit msg'             allow 'git commit -m "fix: handle retries -- properly"'
+bash_hook $BK 'kill specific PID'            allow 'kill 12345'
+bash_hook $BK 'kill -9 specific PID'         allow 'kill -9 12345'
+bash_hook $BK 'pkill with full name'         allow 'pkill -f "node server.js"'
 bash_hook $I 'read git email'                allow 'git config --get user.email'
 bash_hook $I 'set correct global email'      allow "git config user.email \"$(git config --global user.email)\""
 bash_hook $CL 'conventional commit'          allow 'git commit -m "feat: add retry logic"'
