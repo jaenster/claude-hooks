@@ -92,9 +92,42 @@ if [ ! -f "$HOME/.claude/CLAUDE.md" ]; then
     echo "  Copied CLAUDE.md"
   fi
 elif [ -f "$SCRIPT_DIR/CLAUDE.md" ]; then
-  echo "~/.claude/CLAUDE.md already exists — skipping (see CLAUDE.md in this repo for reference)."
+  echo "~/.claude/CLAUDE.md already exists -- skipping (see CLAUDE.md in this repo for reference)."
 fi
 echo
+
+# ---- optional: global git hooks ---------------------------------------------
+
+GIT_HOOKS_SRC="$SCRIPT_DIR/git-hooks"
+GIT_HOOKS_DIR="$HOME/.config/git/hooks"
+
+if [ -d "$GIT_HOOKS_SRC" ]; then
+  printf "Install global git hooks (blocks Claude attribution at the git level)? [y/N] "
+  read -r answer
+  if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
+    mkdir -p "$GIT_HOOKS_DIR"
+    for f in "$GIT_HOOKS_SRC"/*; do
+      name=$(basename "$f")
+      if [ -f "$GIT_HOOKS_DIR/$name" ]; then
+        echo "  $name already exists -- skipping"
+      else
+        cp "$f" "$GIT_HOOKS_DIR/$name"
+        chmod +x "$GIT_HOOKS_DIR/$name"
+        echo "  installed $name"
+      fi
+    done
+    current=$(git config --global core.hooksPath 2>/dev/null || true)
+    if [ -z "$current" ]; then
+      git config --global core.hooksPath "$GIT_HOOKS_DIR"
+      echo "  set core.hooksPath to $GIT_HOOKS_DIR"
+    elif [ "$current" = "$GIT_HOOKS_DIR" ]; then
+      echo "  core.hooksPath already set"
+    else
+      echo "  core.hooksPath is already '$current' -- not changing it"
+    fi
+  fi
+  echo
+fi
 
 # ---- run regression suite ---------------------------------------------------
 
@@ -105,6 +138,6 @@ if "$SRC/regress.sh"; then
   echo "All tests passed. You're good to go."
 else
   echo
-  echo "Some tests failed — check the output above."
+  echo "Some tests failed -- check the output above."
   exit 1
 fi

@@ -101,8 +101,7 @@
             "timeout": 10
           }
         ]
-      }
-    ],
+      },
       {
         "matcher": "Write|Edit|Bash",
         "hooks": [

@@ -29,31 +29,59 @@ The repo also includes **global git hooks** (in `git-hooks/`) that run at the gi
 | **commit-msg** | Rejects commits with Claude attribution in the message text |
 | **pre-commit** | Rejects commits authored by assistant email addresses |
 
-## Quick install (macOS)
+## Install
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/jaenster/claude-hooks/main/install.sh | bash
-```
+### Let Claude set it up
 
-Or manually:
+Paste this into Claude Code and it will install, configure, and clean up for you:
 
-```bash
-git clone https://github.com/jaenster/claude-hooks.git
-cd claude-hooks
-./install.sh
-```
+~~~
+Install claude-hooks from https://github.com/jaenster/claude-hooks -- clone the
+repo to /tmp/claude-hooks, run the install script, answer yes to everything, then
+verify the regression tests pass. After that, review which hooks were installed
+and tell me which ones I might want to remove based on my setup (check my
+package manager, whether I sign commits, etc). Clean up the clone when done.
+~~~
 
-The installer:
-1. Copies hooks to `~/.claude/hooks/`
-2. Makes them executable
-3. Merges the hook config into your `~/.claude/settings.json` (backs up first)
-4. Runs the regression suite to verify everything works
+### Or run it yourself
 
-## Manual setup
+Paste this into any terminal:
+
+~~~
+git clone https://github.com/jaenster/claude-hooks.git /tmp/claude-hooks && /tmp/claude-hooks/install.sh
+~~~
+
+The installer backs up your settings, copies hooks, merges the config, and runs the test suite. When it's done you can delete the clone (`rm -rf /tmp/claude-hooks`).
+
+### What the installer does
+
+1. Copies hooks to `~/.claude/hooks/` and makes them executable
+2. Merges hook entries into `~/.claude/settings.json` (skips any already present, backs up first)
+3. Optionally copies the included `CLAUDE.md` to `~/.claude/CLAUDE.md`
+4. Optionally installs global git hooks to `~/.config/git/hooks/` and sets `core.hooksPath`
+5. Runs the 83-test regression suite to verify everything works
+
+### Pick what you need
+
+Not every hook suits every workflow. After installing, remove what doesn't apply:
+
+| If you... | Remove |
+|-|-|
+| Use npm/yarn/bun, not pnpm | `pnpm-only.sh` |
+| Don't sign commits | `no-gpgsign-bypass.sh` |
+| Want padded markdown tables | `md-style.sh` |
+| Don't use conventional commits | `commit-msg-lint.sh` |
+| Write i18n source with intentional Unicode | `ascii-only.sh` |
+
+To remove a hook, delete it from `~/.claude/hooks/` and remove its entry from `~/.claude/settings.json` under `hooks.PreToolUse`.
+
+### Manual setup
+
+If you prefer not to run the installer:
 
 1. Copy the `hooks/` directory to `~/.claude/hooks/`
 2. Make them executable: `chmod +x ~/.claude/hooks/*.sh`
-3. Add the hook configuration to your `~/.claude/settings.json` — see [settings.example.json](settings.example.json) for the exact structure
+3. Add the hook configuration to your `~/.claude/settings.json` -- see [settings.example.json](settings.example.json) for the exact structure
 
 ## How hooks work
 
