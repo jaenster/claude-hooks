@@ -114,4 +114,4 @@ echo '{"tool_name":"Bash","tool_input":{"command":"npm install"}}' | ./hooks/pnp
 
 **Scope narrowly.** A hook that scans every Write for every possible problem will be slow and full of false positives. Match on specific tool names, check paths early, and exit 0 as soon as you know it's irrelevant.
 
-**PostToolUse hooks can feed Stop hooks.** The track-verify + require-tests pair demonstrates this: PostToolUse records state, Stop reads it. This is the pattern for "enforce X before finishing."
+**PostToolUse hooks can feed Stop hooks.** PostToolUse records state, Stop reads it. This is the pattern for "enforce X before finishing."

@@ -117,16 +117,7 @@ write_hook $M 'minimal separator'            allow /tmp/x.md '| a | b |
 write_hook $N 'phase as a variable'          allow /tmp/a.ts 'const phase = 2; if (a.phase === 1) {}'
 write_hook $N 'legit phase comment'          allow /tmp/a.ts '// compute the phase offset for the FFT'
 
-echo "verify-runner coverage"
-T=$(resolve track-verify.sh); SID="rg-$$"
-for c in "just test" "task build" "turbo run test" "nx test app" "deno task check" \
-         "tox" "bazel test //..." "pnpm run build" "./scripts/dev.sh" "cargo test" "ls -la"; do
-  rm -f ~/.claude/state/verify-$SID
-  jq -nc --arg s "$SID" --arg c "$c" '{session_id:$s,tool_name:"Bash",tool_input:{command:$c}}' | $T
-  if [ -s ~/.claude/state/verify-$SID ]; then st=recorded; else st="not-a-runner"; fi
-  printf '  %-20s %s\n' "$c" "$st"
-done
-rm -f ~/.claude/state/verify-$SID /tmp/newfile.ts
+rm -f /tmp/newfile.ts
 cd "$S" && rm -rf "$R"
 echo
 echo "PASS=$PASS  FAIL=$FAIL"

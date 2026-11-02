@@ -103,28 +103,7 @@
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash|Write|Edit|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/track-verify.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/require-tests.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
+    "PostToolUse": [],
+    "Stop": []
   }
 }

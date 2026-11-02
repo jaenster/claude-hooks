@@ -18,8 +18,6 @@ These hooks run as `PreToolUse` and `PostToolUse` interceptors — Claude Code c
 | **no-sudo** | `Bash` | Blocks `sudo` — Claude should explain the problem, not escalate privileges |
 | **no-curl-pipe-sh** | `Bash` | Blocks `curl \| bash` patterns — download first, inspect, then run |
 | **no-secrets-read** | `Read`, `Write`, `Edit`, `Bash` | Blocks reading/writing `.env`, private keys, credential files, token files |
-| **require-tests** | Stop hook | Blocks Claude from finishing its turn if source files were changed but nothing was built/tested |
-| **track-verify** | `PostToolUse` | Records which files changed and when tests/builds ran; feeds the require-tests stop hook |
 | **regress** | — | Regression test suite for all hooks |
 
 The repo also includes **global git hooks** (in `git-hooks/`) that run at the git level, independent of Claude:

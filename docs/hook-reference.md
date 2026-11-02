@@ -95,26 +95,6 @@ If your project uses pnpm, Claude will still reach for `npm` half the time. This
 
 To adapt this for `yarn` or `bun`, change the detection pattern and the suggestion map. The structure is the same.
 
-## require-tests.sh + track-verify.sh
-
-**Trigger:** `require-tests.sh` is a **Stop** hook; `track-verify.sh` is a **PostToolUse** hook on `Bash`, `Write`, `Edit`, `NotebookEdit`
-
-These two hooks work together to enforce "always test after changes":
-
-**track-verify.sh** (PostToolUse) records events in `~/.claude/state/verify-<session>`:
-- `E <timestamp> <path>` when a source file is written or edited
-- `V <timestamp>` when a build/test/run command executes
-
-It recognizes a wide range of runners: npm/pnpm/yarn/bun scripts, pytest, jest, vitest, cargo test/build, go test, make, gradle, tox, bazel, turbo, nx, deno task, shell scripts, docker compose, and localhost curl checks.
-
-**require-tests.sh** (Stop) fires when Claude tries to end its turn. It checks whether any source files were changed *after* the last verification run. If so, it blocks the stop with a list of unverified files and tells Claude to build/test first.
-
-### Scope
-
-Only source file extensions trigger the edit tracker (`.ts`, `.js`, `.py`, `.go`, `.rs`, `.rb`, `.php`, `.java`, `.kt`, `.swift`, `.c`, `.h`, `.cpp`, `.cs`, `.sh`, `.sql`, `.vue`, `.svelte`, `.ipynb`). Config files, docs, and `~/.claude/` edits are ignored.
-
-State files are per-session and auto-pruned after 7 days.
-
 ## regress.sh
 
 Not a runtime hook — this is the test suite. Run it to verify all hooks work correctly:
@@ -125,5 +105,4 @@ Not a runtime hook — this is the test suite. Run it to verify all hooks work c
 
 It creates a throwaway git repo, exercises every hook with known-good and known-bad inputs, and prints pass/fail. The suite covers:
 - False positives that were historically problematic (moving untracked files into tracked dirs, domain terms like "stage" in commit messages, fenced code blocks with banned characters)
-- True positives (moving tracked files, blanket staging, plan comments, npm commands, padded separators)
-- The track-verify runner recognition (which commands count as "verification")
+- True positives (moving tracked files, blanket staging, plan comments, npm commands, padded separators, sudo, secrets, conventional commits)
